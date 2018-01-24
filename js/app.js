@@ -2,10 +2,7 @@
 var Enemy = function(x, y,speed) {
     this.x = x;
     this.y = y;
-    // 要应用到每个敌人的实例的变量写在这里
-    // 我们已经提供了一个来帮助你实现更多
     this.speed = speed;
-    // 敌人的图片，用一个我们提供的工具函数来轻松的加载文件
     this.sprite = 'images/enemy-bug.png';
 };
 
@@ -17,13 +14,23 @@ Enemy.prototype.update = function(dt) {
 
 // 此为游戏必须的函数，用来在屏幕上画出敌人，
 Enemy.prototype.render = function() {
+    //敌人超出屏幕停止渲染
+    if (this.x < 600) {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    };
+    //敌人超出屏幕后重置位置（位置随机）
+    if (this.x >= 600) {
+        this.x = position[randomNum(4)];
+        this.y = 83*row[randomNum(3)]+55;
+        this.speed = speed[randomNum(4)];
+    }
     this.checkCollision(player);
 };
 
 Enemy.prototype.checkCollision = function(player) {
-    if(this.y <= player.y + 10 && this.y >= player.y - 10) {
-
+    //碰撞后回到随机起点
+    if(this.y == player.y && this.x <= player.x + 30 && this.x >= player.x - 55) {
+        playerPositin();
     }
 };
 
@@ -38,7 +45,7 @@ var Player = function(x, y) {
 Player.prototype.update = function(dt) {
 
 };
-
+//通过键盘移动人物
 Player.prototype.handleInput = function(movement) {
     switch (movement) {
         case 'left':
@@ -54,15 +61,34 @@ Player.prototype.handleInput = function(movement) {
 
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    if(this.y < 50) {
+        playerPositin();
+    }
 };
-// 现在实例化你的所有对象 {
-// 把所有敌人的对象都放进一个叫 allEnemies 的数组里面
-// 把玩家对象放进一个叫 player 的变量里面
-var allEnemies = [new Enemy(0,83+55,0)];
-var player = new Player(0,83*4+55);
 
+//建立敌人起始x,y,速度集合
+var position = [-60, -100, -200, -550],
+    row = [0, 1, 2],
+    speed = [80, 120, 200, 260],
+    randomNum = function(n) {
+        let number = Math.floor(Math.random()*n);
+        return number;
+    };//随机数
+    // 现在实例化你的所有对象
+    // 把所有敌人的对象都放进一个叫 allEnemies 的数组里面
+    // 把玩家对象放进一个叫 player 的变量里面
+var allEnemies = [];
+var player = new Player(202,83*4+55);
+//初始化玩家位置
+var playerPositin = function (){
+    player.x = 0+101*randomNum(5);
+    player.y = 83*4+55;
+}
 
-
+//随机位置和速度创建敌人（个数可调节）
+for(let i = 0; i < 6; i++) {
+    allEnemies.push(new Enemy(position[randomNum(4)], 83*row[randomNum(3)]+55, speed[randomNum(4)]));
+};
 // 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Player.handleInput()
 // 方法里面。你不需要再更改这段代码了。
 document.addEventListener('keyup', function(e) {
