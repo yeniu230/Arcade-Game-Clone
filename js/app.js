@@ -58,12 +58,19 @@ Player.prototype.handleInput = function(movement) {
             if(this.y < 387) this.y += 83; break;
     }
 };
-
+var totalScore = 0;
 Player.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     if(this.y < 50) {
         playerPositin();
-    }
+        totalScore += 1;
+        $('span').empty().append(totalScore);
+    };
+    if(totalScore == 5) {
+        alert("恭喜获胜, 重新开始");
+        totalScore = 0;
+        $('span').empty().append(totalScore);
+    };
 };
 
 //建立敌人起始x,y,速度集合
@@ -86,7 +93,7 @@ var playerPositin = function (){
 }
 
 //随机位置和速度创建敌人（个数可调节）
-for(let i = 0; i < 6; i++) {
+for(let i = 0; i < 10; i++) {
     allEnemies.push(new Enemy(position[randomNum(4)], 83*row[randomNum(3)]+55, speed[randomNum(4)]));
 };
 // 这段代码监听游戏玩家的键盘点击事件并且代表将按键的关键数字送到 Player.handleInput()
